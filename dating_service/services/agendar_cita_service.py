@@ -1,15 +1,32 @@
 from datetime import datetime
-from flask import jsonify
+from flask import jsonify, request
 from models.cita_model import CitaModel
 from models.user_model import UserModel
+import jwt
+
+SECRET_KEY = "supersecretkey"  # Usa tu clave secreta aquí
 
 class AgendarCitaService:
     @staticmethod
     def agendar_cita(fecha, hora):
-        # Obtener el email del usuario desde el token o la sesión (en producción debe estar basado en el token JWT)
-        cliente_email = "cliente@dominio.com"  # Debe obtenerlo del token del cliente en producción
+        # Obtener el token del encabezado de la solicitud
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({"success": False, "error": "Token no proporcionado"}), 401
+        
+        # El token viene como 'Bearer <token>', por lo que debemos extraer solo el token
+        token = token.split(" ")[1]
 
-        # Verificar si el email del cliente existe
+        try:
+            # Decodificar el token
+            decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            cliente_email = decoded.get('email')  # Obtener el email del token
+        except jwt.ExpiredSignatureError:
+            return jsonify({"success": False, "error": "Token expirado"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"success": False, "error": "Token inválido"}), 401
+
+        # Verificar si el email del cliente existe en la base de datos
         user = UserModel.find_user(cliente_email)
         if not user:
             return jsonify({"success": False, "error": "El usuario no existe"}), 400
