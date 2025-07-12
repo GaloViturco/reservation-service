@@ -6,4 +6,9 @@ class CitaModel:
         conn, cursor = get_connection()
         cursor.execute("SELECT fecha, hora FROM citas WHERE cliente_email=?", (cliente_email,))
         citas = cursor.fetchall()
-        return [{"fecha": cita[0], "hora": cita[1]} for cita in citas]
+        
+        # Convertir la hora a string para evitar el error de serialización de JSON
+        citas_serializadas = [
+            {"fecha": cita[0], "hora": cita[1].strftime("%H:%M")} for cita in citas
+        ]
+        return citas_serializadas
