@@ -21,7 +21,7 @@ jobs:
 
     - name: Build Docker images for add and get friends services
       run: |
-        docker build -t galo12/dating ./dating service
+        docker build -t galo12/dating ./dating_service
 
     - name: Push images to Docker Hub
       run: |
