@@ -1,7 +1,6 @@
 from datetime import datetime
 from flask import jsonify
 from models.cita_model import CitaModel
-from models.user_model import UserModel
 
 class AgendarCitaService:
     @staticmethod
