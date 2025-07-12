@@ -10,7 +10,7 @@ class VerCitasService:
     def ver_citas(token):
         try:
             decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            cliente_email = decoded.get('email')
+            cliente_email = decoded.get('email')  # Extraer el email del usuario desde el token
         except jwt.ExpiredSignatureError:
             return jsonify({"success": False, "error": "Token expirado"}), 401
         except jwt.InvalidTokenError:
