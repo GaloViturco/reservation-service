@@ -22,11 +22,13 @@ jobs:
     - name: Build Docker images for add and get friends services
       run: |
         docker build -t galo12/dating ./dating_service
+        docker build -t galo12/get-dating ./get_dating
 
     - name: Push images to Docker Hub
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker push galo12/dating
+        docker push galo12/get-dating
 
     - name: Deploy services to EC2
       uses: appleboy/ssh-action@v1.0.0
@@ -38,9 +40,13 @@ jobs:
           # stop
           docker stop dating || true
           docker rm dating || true
+          docker stop get-dating || true
+          docker rm get-dating || true
 
           # Download
           docker pull galo12/dating
+          docker pull galo12/get-dating
 
           # Ejecute
           docker run -d --name dating -p 8001:8001 --restart unless-stopped galo12/dating
+          docker run -d --name get-dating -p 8002:8002 --restart unless-stopped galo12/get-dating
